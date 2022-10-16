@@ -9,6 +9,19 @@ import Foundation
 
 //https://api.chucknorris.io/jokes/random
 
+struct Joke: Decodable {
+
+    var value: String
+    var id: String
+    var url: String
+}
+
+struct Answer: Decodable {
+
+    var total: Int
+    var result: [Joke]
+}
+
 func getRandomJoke(completion: ( ( _ joke: String? ) -> Void )? ) {
 
     let session = URLSession(configuration: .default)
@@ -34,13 +47,9 @@ func getRandomJoke(completion: ( ( _ joke: String? ) -> Void )? ) {
         }
 
         do {
-            let answer = try JSONSerialization.jsonObject(with: superData) as? [String: Any]
-            if let joke = answer?["value"] as? String {
-                completion?(joke)
-                return
-            } else {
-                print("Error. Invalid json format")
-            }
+            let joke = try JSONDecoder().decode(Joke.self, from: superData)
+            completion?(joke.value)
+            return
         } catch {
             print(error)
         }
@@ -53,7 +62,7 @@ func getRandomJoke(completion: ( ( _ joke: String? ) -> Void )? ) {
 
 func getJokeList(
     searchString string: String,
-    completion: ((_ jokeArray: [String]?
+    completion: ((_ jokeArray: [Joke]?
                  ) -> Void)? ) {
 
     let urlString = "https://api.chucknorris.io/jokes/search?query=\(string)"
@@ -79,16 +88,8 @@ func getJokeList(
         }
 
         do {
-            let answer = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-            let arrayDict = (answer?["result"] as? [[String: Any]]) ?? []
-
-            var returnArray: [String] = []
-            for dict in arrayDict {
-                if let joke = dict["value"] as? String {
-                    returnArray.append(joke)
-                }
-            }
-            completion?(returnArray)
+            let answer = try JSONDecoder().decode(Answer.self, from: data)
+            completion?(answer.result)
             return
 
         } catch {
