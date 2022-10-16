@@ -52,7 +52,7 @@ class SearchController: UITableViewController, UISearchBarDelegate {
             for: indexPath
         )
 
-        cell.textLabel?.text = jokes[indexPath.row].value
+        cell.textLabel?.text = jokes[indexPath.row].text
 
         return cell
     }
@@ -63,7 +63,7 @@ class SearchController: UITableViewController, UISearchBarDelegate {
     ) {
         tableView.deselectRow(at: indexPath, animated: true)
         let ac = UIActivityViewController(
-            activityItems: [jokes[indexPath.row].value],
+            activityItems: [jokes[indexPath.row].text],
         applicationActivities: nil
         )
         present(ac, animated: true)

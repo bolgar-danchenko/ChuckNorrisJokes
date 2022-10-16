@@ -11,9 +11,15 @@ import Foundation
 
 struct Joke: Decodable {
 
-    var value: String
+    var text: String
     var id: String
     var url: String
+
+    enum CodingKeys: String, CodingKey {
+        case text = "value"
+        case id
+        case url
+    }
 }
 
 struct Answer: Decodable {
@@ -48,7 +54,7 @@ func getRandomJoke(completion: ( ( _ joke: String? ) -> Void )? ) {
 
         do {
             let joke = try JSONDecoder().decode(Joke.self, from: superData)
-            completion?(joke.value)
+            completion?(joke.text)
             return
         } catch {
             print(error)
